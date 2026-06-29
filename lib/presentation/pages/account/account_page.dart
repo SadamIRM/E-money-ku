@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_auth/local_auth.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/datasources/local/secure_storage_datasource.dart';
+import '../../../injection/injection_container.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../widgets/app_avatar.dart';
 import '../../widgets/app_badge.dart';
@@ -279,11 +282,71 @@ class _Toggle extends StatefulWidget {
 }
 
 class _ToggleState extends State<_Toggle> {
-  bool _on = true;
+  bool _on = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBiometricStatus();
+  }
+
+  Future<void> _loadBiometricStatus() async {
+    final enabled = await sl<SecureStorageDatasource>().getBiometricEnabled();
+    if (mounted) {
+      setState(() {
+        _on = enabled;
+      });
+    }
+  }
+
+  Future<void> _toggleBiometrics() async {
+    final newValue = !_on;
+    if (newValue) {
+      final auth = LocalAuthentication();
+      try {
+        final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+        final bool canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+
+        if (!canAuthenticate) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Perangkat tidak mendukung biometrik.')),
+            );
+          }
+          return;
+        }
+
+        final bool didAuthenticate = await auth.authenticate(
+          localizedReason: 'Konfirmasi sidik jari Anda untuk mengaktifkan login biometrik',
+          options: const AuthenticationOptions(
+            stickyAuth: true,
+            biometricOnly: true,
+          ),
+        );
+
+        if (!didAuthenticate) return;
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal verifikasi biometrik: $e')),
+          );
+        }
+        return;
+      }
+    }
+
+    await sl<SecureStorageDatasource>().saveBiometricEnabled(newValue);
+    if (mounted) {
+      setState(() {
+        _on = newValue;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() => _on = !_on),
+      onTap: _toggleBiometrics,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         width: 44,

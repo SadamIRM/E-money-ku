@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_auth/local_auth.dart';
 import '../../../core/services/deeplink_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/datasources/local/secure_storage_datasource.dart';
+import '../../../injection/injection_container.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_logo.dart';
@@ -19,6 +22,54 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     context.read<AuthBloc>().add(AuthCheckRequested());
+    _checkInitialAuth();
+  }
+
+  Future<void> _checkInitialAuth() async {
+    await Future.delayed(Duration.zero);
+    if (mounted) {
+      final state = context.read<AuthBloc>().state;
+      if (state is AuthAuthenticated) {
+        _handleAuthenticated();
+      }
+    }
+  }
+
+  Future<void> _handleAuthenticated() async {
+    final isBioEnabled = await sl<SecureStorageDatasource>().getBiometricEnabled();
+    if (isBioEnabled) {
+      final authenticated = await _authenticateWithBiometrics();
+      if (!authenticated) {
+        return;
+      }
+    }
+    final pending = DeeplinkService.consumePending();
+    if (pending != null) {
+      if (mounted) context.go('/pay', extra: pending);
+    } else {
+      if (mounted) context.go('/home');
+    }
+  }
+
+  Future<bool> _authenticateWithBiometrics() async {
+    final LocalAuthentication auth = LocalAuthentication();
+    try {
+      final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+
+      if (!canAuthenticate) return false;
+
+      final bool didAuthenticate = await auth.authenticate(
+        localizedReason: 'Silakan verifikasi sidik jari Anda untuk masuk ke Smoke Money',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+      return didAuthenticate;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -26,14 +77,7 @@ class _SplashPageState extends State<SplashPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          // Cek apakah ada deeplink payment yang menunggu (cold-start via deeplink).
-          // Jika ada, langsung ke halaman konfirmasi. Jika tidak, ke home.
-          final pending = DeeplinkService.consumePending();
-          if (pending != null) {
-            context.go('/pay', extra: pending);
-          } else {
-            context.go('/home');
-          }
+          _handleAuthenticated();
         } else if (state is AuthUnauthenticated) {
           // Stay on splash to show welcome
         }
@@ -99,20 +143,41 @@ class _SplashPageState extends State<SplashPage> {
                         ),
                       ),
                       const Spacer(),
-                      Column(
-                        children: [
-                          AppButton(
-                            label: 'Buat Akun Baru',
-                            variant: AppButtonVariant.white,
-                            onPressed: () => context.push('/register'),
-                          ),
-                          const SizedBox(height: 11),
-                          AppButton(
-                            label: 'Masuk ke Akun',
-                            variant: AppButtonVariant.outlineWhite,
-                            onPressed: () => context.push('/login'),
-                          ),
-                        ],
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, authState) {
+                          if (authState is AuthAuthenticated) {
+                            return AppButton(
+                              label: 'Masuk dengan Sidik Jari',
+                              variant: AppButtonVariant.white,
+                              onPressed: () async {
+                                final authenticated = await _authenticateWithBiometrics();
+                                if (authenticated) {
+                                  final pending = DeeplinkService.consumePending();
+                                  if (pending != null) {
+                                    context.go('/pay', extra: pending);
+                                  } else {
+                                    context.go('/home');
+                                  }
+                                }
+                              },
+                            );
+                          }
+                          return Column(
+                            children: [
+                              AppButton(
+                                label: 'Buat Akun Baru',
+                                variant: AppButtonVariant.white,
+                                onPressed: () => context.push('/register'),
+                              ),
+                              const SizedBox(height: 11),
+                              AppButton(
+                                label: 'Masuk ke Akun',
+                                variant: AppButtonVariant.outlineWhite,
+                                onPressed: () => context.push('/login'),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 30),
                     ],
