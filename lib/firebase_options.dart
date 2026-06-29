@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -50,11 +47,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCWAzGMTyg1uSspi1qfno71sj4iCfp7qGk',
-    appId: '1:948878883710:android:516b94bdc2276b68a0512f',
-    messagingSenderId: '948878883710',
-    projectId: 'fir-emoney-e9256',
-    storageBucket: 'fir-emoney-e9256.firebasestorage.app',
+    apiKey: 'AIzaSyC44F_D6vlv6CKeU-Wav44c-k1zPU6CTa8',
+    appId: '1:1043585898165:android:2bb612e23da15aa34cd0fc',
+    messagingSenderId: '1043585898165',
+    projectId: 'smoke-money',
+    storageBucket: 'smoke-money.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -65,4 +62,15 @@ class DefaultFirebaseOptions {
     storageBucket: 'fir-emoney-e9256.firebasestorage.app',
     iosBundleId: 'com.kampus.dompetKampusGlobal',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBgpSwulVtmZr6FholdWxq-BUxtQ_MhoPE',
+    appId: '1:1043585898165:web:fed44dbd909c6a474cd0fc',
+    messagingSenderId: '1043585898165',
+    projectId: 'smoke-money',
+    authDomain: 'smoke-money.firebaseapp.com',
+    storageBucket: 'smoke-money.firebasestorage.app',
+    measurementId: 'G-05MVNLLG04',
+  );
+
 }
