@@ -282,21 +282,19 @@ class _Toggle extends StatefulWidget {
 }
 
 class _ToggleState extends State<_Toggle> {
+  Future<bool>? _biometricFuture;
   bool _on = false;
 
   @override
   void initState() {
     super.initState();
-    _loadBiometricStatus();
+    _biometricFuture = _loadBiometricStatus();
   }
 
-  Future<void> _loadBiometricStatus() async {
+  Future<bool> _loadBiometricStatus() async {
     final enabled = await sl<SecureStorageDatasource>().getBiometricEnabled();
-    if (mounted) {
-      setState(() {
-        _on = enabled;
-      });
-    }
+    _on = enabled;
+    return enabled;
   }
 
   Future<void> _toggleBiometrics() async {
@@ -339,37 +337,65 @@ class _ToggleState extends State<_Toggle> {
     if (mounted) {
       setState(() {
         _on = newValue;
+        _biometricFuture = Future.value(newValue);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleBiometrics,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        width: 44,
-        height: 26,
-        decoration: BoxDecoration(
-          color: _on ? AppColors.green : AppColors.line,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: AnimatedAlign(
-          duration: const Duration(milliseconds: 180),
-          alignment: _on ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.all(3),
-            width: 20,
-            height: 20,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 3, offset: Offset(0, 1))],
+    return FutureBuilder<bool>(
+      future: _biometricFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            width: 44,
+            height: 26,
+            child: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.slate400,
+              ),
+            ),
+          );
+        }
+
+        final on = snapshot.data ?? false;
+
+        return GestureDetector(
+          onTap: _toggleBiometrics,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 44,
+            height: 26,
+            decoration: BoxDecoration(
+              color: on ? AppColors.green : AppColors.line,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: AnimatedAlign(
+              duration: const Duration(milliseconds: 180),
+              alignment: on ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                margin: const EdgeInsets.all(3),
+                width: 20,
+                height: 20,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 3,
+                      offset: Offset(0, 1),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
