@@ -25,41 +25,59 @@ Kedua aplikasi dibangun dengan prinsip **Clean Architecture**, namun menggunakan
 Proyek ini dikelompokkan berdasarkan **Lapisan (Layer)** arsitektur secara global:
 ```
 lib/
-├── core/                 # Konfigurasi global, utilitas, tema, & rute
-├── data/                 # Lapisan Data (DataSource, Model, Impl Repositori)
-│   ├── datasources/      # Sumber data (local: SecureStorage, remote: Dio API)
-│   ├── models/           # Parser respon JSON dari API
-│   └── repositories/     # Implementasi repositori dari domain
-├── domain/               # Lapisan Bisnis (Entitas, UseCase, Kontrak Repositori)
-│   ├── entities/         # Objek bisnis murni bebas framework
-│   ├── repositories/     # Interface kontrak data
-│   └── usecases/         # Aksi bisnis (Payment, Transfer, OTP, Topup)
-├── presentation/         # Lapisan UI (Halaman, Widget, Bloc)
-│   ├── blocs/            # Pengelola state UI (AuthBloc, OtpBloc, dll.)
-│   ├── pages/            # Seluruh tampilan layar aplikasi
-│   └── widgets/          # Komponen UI reusable (Button, Field, dll.)
-└── injection/            # Dependency Injection (Service Locator)
+├── core/
+│   ├── constants/        # Konstanta string, API, dan key secure storage
+│   ├── error/            # Penanganan kesalahan/exception aplikasi
+│   ├── network/          # Konfigurasi client HTTP (Dio Client & Interceptor)
+│   ├── router/           # Navigasi terpusat berbasis GoRouter
+│   ├── services/         # Layanan internal (biometrik & deep link)
+│   ├── theme/            # Desain sistem & skema warna aplikasi
+│   └── utils/            # Fungsi helper umum (formatter mata uang, dll.)
+├── data/
+│   ├── datasources/
+│   │   ├── local/        # Akses Secure Storage untuk token JWT & biometrik
+│   │   └── remote/       # Panggilan HTTP ke Endpoint API be-smoke-money
+│   ├── models/           # Data Transfer Object (DTO) untuk parsing JSON API
+│   └── repositories/     # Implementasi repositori penghubung datasource ke domain
+├── domain/
+│   ├── entities/         # Model data murni tanpa framework (User, Transaction)
+│   ├── repositories/     # Abstraksi (interface) kontrak akses data
+│   └── usecases/         # Logika bisnis inti (login, transfer, topup, verify 2fa)
+├── presentation/
+│   ├── blocs/            # Manajemen state UI menggunakan BLoC pattern
+│   ├── pages/            # Layanan antarmuka layar (Login, Home, Topup, Transfer, PIN, 2FA)
+│   └── widgets/          # Komponen widget UI kustom yang dapat digunakan kembali
+├── injection/            # Konfigurasi Dependency Injection menggunakan GetIt
+├── firebase_options.dart # Konfigurasi Firebase SDK
+└── main.dart             # Entry point & inisialisasi awal aplikasi
 ```
 
 ### 2. Struktur Folder `Store Smoke` (Feature-First Approach)
 Proyek ini dikelompokkan berdasarkan **Fitur (Feature)** terlebih dahulu, di mana setiap fitur memiliki Clean Architecture-nya sendiri:
 ```
 lib/
-├── core/                 # Konstanta, tema, rute, & servis terpusat (Notification)
-├── features/             # Kumpulan Fitur Independen
+├── core/
+│   ├── constants/        # Konstanta warna, endpoint API toko, & teks statis
+│   ├── guards/           # Proteksi rute (AuthGuard untuk memproteksi dashboard)
+│   ├── routes/           # Routing aplikasi (AppRouter)
+│   ├── services/         # Layanan lokal (local notifications, secure storage, biometrik)
+│   ├── shared/           # Widget reusable global (custom button, textfield, dll.)
+│   └── theme/            # Definisi tema visual utama aplikasi
+├── features/
 │   ├── auth/             # Fitur Autentikasi (Login, Register, Verify Email)
-│   │   ├── data/         # Data layer khusus fitur auth
-│   │   ├── domain/       # Domain layer khusus fitur auth
-│   │   └── presentation/ # UI layer (Halaman & Provider) khusus fitur auth
-│   ├── cart/             # Fitur Keranjang & Pembayaran (Cart, Checkout)
-│   │   ├── data/         
-│   │   ├── domain/       
-│   │   └── presentation/ 
-│   └── dashboard/        # Fitur Halaman Utama (Home, History, Profile)
-│       ├── data/         
-│       ├── domain/       
-│       └── presentation/ 
-└── main.dart             # Entry point aplikasi & inisialisasi state provider
+│   │   ├── data/         # Implementasi API & auth state lokal
+│   │   ├── domain/       # Kontrak repositori & usecase auth
+│   │   └── presentation/ # Halaman (LoginPage, RegisterPage) & ChangeNotifierProvider
+│   ├── cart/             # Fitur Keranjang, Checkout, & Awaiting Payment
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/ # Halaman (CartPage, CheckoutPage, AwaitingPaymentPage) & Provider
+│   └── dashboard/        # Fitur Halaman Utama setelah Login (Home, History, Profile)
+│       ├── data/
+│       ├── domain/
+│       └── presentation/ # Halaman (DashboardPage, HomePage, HistoryPage, ProfilePage) & Provider
+├── firebase_options.dart # Konfigurasi Firebase SDK
+└── main.dart             # Entry point & inisialisasi state provider terpusat (MultiProvider)
 ```
 
 ---
