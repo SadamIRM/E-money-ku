@@ -1,4 +1,4 @@
-name: smoke-money
+name: smokemoney
 description: "Aplikasi e-money Dompet Kampus Global — bayar, transfer, dan kelola uang kuliah."
 publish_to: 'none'
 version: 1.0.0+1
