@@ -88,8 +88,8 @@ Alur pembayaran antar aplikasi diintegrasikan secara mulus via custom scheme dee
 
 * **Skema Pembayaran (`smokemoney://pay`)**:
   * Dipicu dari `Store Smoke` ke `Smoke Money` dengan parameter detail pesanan (`merchant_id`, `merchant_name`, `amount`, `reference`, dan `callback`).
-  * Konfigurasi di Android dideklarasikan pada intent-filter berkas [AndroidManifest.xml](file:///home/nafisah/uas-sadam-1123150087/project/android/app/src/main/AndroidManifest.xml).
-  
+  * Konfigurasi di Android dideklarasikan pada intent-filter berkas `AndroidManifest.xml` proyek masing-masing.
+
 * **Skema Callback (`smokestore://callback`)**:
   * Dipicu dari `Smoke Money` kembali ke `Store Smoke` untuk mengirimkan status penyelesaian transaksi (`success`, `failed`, atau `cancelled`).
 
