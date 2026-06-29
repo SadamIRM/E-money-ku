@@ -163,4 +163,29 @@ flutter run
 # Jalankan aplikasi dompet (Smoke Money)
 cd project
 flutter run
-```
+
+## UI aplikasi Smoke Money & Store Smoke
+
+* Tampilan UI
+<p align="center">
+  <img src="assets/images/image1.png" width="200"/>
+  <img src="assets/images/image2.png" width="200"/>
+  <img src="assets/images/image3.png" width="200"/>
+  <img src="assets/images/image4.png" width="200"/>
+</p>
+
+## Link Repositories & Presentasi Youtube
+
+### Github Repository
+
+* [Store Smoke](https://github.com/SadamIRM/smoker-app-sadamirham.git) - Klik untuk melihat repositori Store Smoke
+
+* [Smoke Money](https://github.com/SadamIRM/E-money-ku.git) - Klik untuk melihat repositori Smoke Money
+
+* [Backend Store Smoke](https://github.com/SadamIRM/be-smoke-store.git) - Klik untuk melihat repositori Backend Api E-commerce
+
+* [Backend Smoke Money](https://github.com/SadamIRM/be-E-Money-ku.git) - Klik untuk melihat repositori Backend Api E-Money
+
+### Presentasi Youtube
+
+* [Link Presentasi Youtube](https://youtu.com/) - Klik untuk melihat presentasi Youtube
