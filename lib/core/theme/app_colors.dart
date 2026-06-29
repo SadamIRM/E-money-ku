@@ -1,40 +1,44 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Blue
-  static const Color primary = Color(0xFF0B63E5);
-  static const Color primaryLight = Color(0xFF2C8BFF);
-  static const Color primaryDark = Color(0xFF0A4FBF);
-  static const Color primarySurface = Color(0xFFE8F1FD);
-  static const Color primaryBorder = Color(0xFFB8D0F7);
+  // Primary Smoke / Charcoal Vibe
+  static const Color primary = Color(0xFF2F3542);
+  static const Color primaryLight = Color(0xFF747D8C);
+  static const Color primaryDark = Color(0xFF212529);
+  static const Color primarySurface = Color(0xFFEAECEE);
+  static const Color primaryBorder = Color(0xFFCED4DA);
 
   // Semantic
   static const Color green = Color(0xFF16A571);
   static const Color greenSurface = Color(0xFFE8F8F2);
-  static const Color amber = Color(0xFFD98512);
-  static const Color amberSurface = Color(0xFFFDF3E3);
+  static const Color amber = Color(0xFFFF7A00); // Glowing Ember Orange
+  static const Color amberSurface = Color(0xFFFFF0E5);
   static const Color red = Color(0xFFE5484D);
   static const Color redSurface = Color(0xFFFDECED);
   static const Color violet = Color(0xFF7A5AF8);
   static const Color violetSurface = Color(0xFFF0EEFF);
 
   // Neutral
-  static const Color ink = Color(0xFF0E1726);
-  static const Color slate600 = Color(0xFF4B5E78);
-  static const Color slate500 = Color(0xFF6B7A90);
-  static const Color slate400 = Color(0xFF9DABBE);
-  static const Color slate300 = Color(0xFFCBD2DD);
-  static const Color line = Color(0xFFE8ECF2);
-  static const Color line2 = Color(0xFFF3F5F8);
-  static const Color bg = Color(0xFFF6F7F9);
+  static const Color ink = Color(0xFF1A1D20);
+  static const Color slate600 = Color(0xFF495057);
+  static const Color slate500 = Color(0xFF6C757D);
+  static const Color slate400 = Color(0xFFADB5BD);
+  static const Color slate300 = Color(0xFFDEE2E6);
+  static const Color line = Color(0xFFE9ECEF);
+  static const Color line2 = Color(0xFFF8F9FA);
+  static const Color bg = Color(0xFFF3F4F6);
   static const Color white = Color(0xFFFFFFFF);
 
-  // Gradient
+  // Gradient (Smoke/Cloud style)
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    stops: [0.0, 0.55, 1.0],
-    colors: [primaryLight, primary, primaryDark],
+    stops: [0.0, 0.5, 1.0],
+    colors: [
+      Color(0xFF868E96), // Cloud Gray / Light Smoke
+      Color(0xFF495057), // Charcoal / Medium Smoke
+      Color(0xFF212529), // Carbon / Deep Ash
+    ],
   );
 
   // Shadows
@@ -56,7 +60,7 @@ class AppColors {
   ];
   static List<BoxShadow> shadowPrimary = [
     BoxShadow(
-      color: Color(0x520B63E5),
+      color: Color(0x332F3542),
       blurRadius: 22,
       spreadRadius: 0,
       offset: Offset(0, 10),
