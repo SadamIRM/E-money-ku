@@ -19,30 +19,48 @@ Sistem ini terdiri dari dua proyek aplikasi terintegrasi yang saling terhubung m
 
 ## 🛠️ Arsitektur Proyek (Clean Architecture)
 
-Aplikasi dibangun menggunakan prinsip **Clean Architecture** yang memisahkan kode ke dalam lapisan-lapisan yang independen dan mudah diuji (*testable*):
+Kedua aplikasi dibangun dengan prinsip **Clean Architecture**, namun menggunakan pendekatan struktural yang berbeda:
 
+### 1. Struktur Folder `Smoke Money` (Layer-First Approach)
+Proyek ini dikelompokkan berdasarkan **Lapisan (Layer)** arsitektur secara global:
 ```
 lib/
-├── core/             # Konfigurasi aplikasi, utilitas global, rute (Routing), & tema (Theme)
-├── data/             # Lapisan Data: DataSource (Local/Remote API), Model (JSON Parsing), & Implementasi Repositori
-├── domain/           # Lapisan Bisnis: Entitas (Model Murni), Use Case, & Abstraksi Repositori (Kontrak)
-├── presentation/     # Lapisan UI: Halaman (Pages), Komponen Visual (Widgets), & State Management (Bloc/Provider)
-└── injection/        # Dependency Injection (DI) Setup menggunakan Service Locator
+├── core/                 # Konfigurasi global, utilitas, tema, & rute
+├── data/                 # Lapisan Data (DataSource, Model, Impl Repositori)
+│   ├── datasources/      # Sumber data (local: SecureStorage, remote: Dio API)
+│   ├── models/           # Parser respon JSON dari API
+│   └── repositories/     # Implementasi repositori dari domain
+├── domain/               # Lapisan Bisnis (Entitas, UseCase, Kontrak Repositori)
+│   ├── entities/         # Objek bisnis murni bebas framework
+│   ├── repositories/     # Interface kontrak data
+│   └── usecases/         # Aksi bisnis (Payment, Transfer, OTP, Topup)
+├── presentation/         # Lapisan UI (Halaman, Widget, Bloc)
+│   ├── blocs/            # Pengelola state UI (AuthBloc, OtpBloc, dll.)
+│   ├── pages/            # Seluruh tampilan layar aplikasi
+│   └── widgets/          # Komponen UI reusable (Button, Field, dll.)
+└── injection/            # Dependency Injection (Service Locator)
 ```
 
-### 1. Data Layer (`data/`)
-* **Data Sources**: Penghubung langsung ke API eksternal (Dio Client) atau penyimpanan lokal (`FlutterSecureStorage`).
-* **Models**: Struktur data JSON parser yang mewakili respon API sebelum dipetakan menjadi Entitas bisnis.
-* **Repositories (Implementation)**: Mengimplementasikan logika pemuatan data dari domain kontrak (menyambungkan DataSource ke Use Cases).
-
-### 2. Domain Layer (`domain/`)
-* **Entities**: Objek bisnis murni yang tidak bergantung pada framework/library luar.
-* **Use Cases**: Logika bisnis spesifik aplikasi (contoh: *Topup*, *Transfer*, *Payment*, *Verify OTP*).
-* **Repositories (Contracts)**: Interface penentu fungsi data yang dibutuhkan oleh domain.
-
-### 3. Presentation Layer (`presentation/`)
-* **State Management**: Mengelola perubahan status UI (menggunakan `flutter_bloc` / `Provider`).
-* **Pages & Widgets**: Komponen visual penyusun antarmuka aplikasi.
+### 2. Struktur Folder `Store Smoke` (Feature-First Approach)
+Proyek ini dikelompokkan berdasarkan **Fitur (Feature)** terlebih dahulu, di mana setiap fitur memiliki Clean Architecture-nya sendiri:
+```
+lib/
+├── core/                 # Konstanta, tema, rute, & servis terpusat (Notification)
+├── features/             # Kumpulan Fitur Independen
+│   ├── auth/             # Fitur Autentikasi (Login, Register, Verify Email)
+│   │   ├── data/         # Data layer khusus fitur auth
+│   │   ├── domain/       # Domain layer khusus fitur auth
+│   │   └── presentation/ # UI layer (Halaman & Provider) khusus fitur auth
+│   ├── cart/             # Fitur Keranjang & Pembayaran (Cart, Checkout)
+│   │   ├── data/         
+│   │   ├── domain/       
+│   │   └── presentation/ 
+│   └── dashboard/        # Fitur Halaman Utama (Home, History, Profile)
+│       ├── data/         
+│       ├── domain/       
+│       └── presentation/ 
+└── main.dart             # Entry point aplikasi & inisialisasi state provider
+```
 
 ---
 
