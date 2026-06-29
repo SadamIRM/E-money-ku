@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../data/datasources/local/secure_storage_datasource.dart';
 import '../../../injection/injection_container.dart';
 import '../../blocs/auth/auth_bloc.dart';
@@ -334,6 +335,15 @@ class _ToggleState extends State<_Toggle> {
     }
 
     await sl<SecureStorageDatasource>().saveBiometricEnabled(newValue);
+    
+    // Kirim notifikasi lokal bernada profesional tanpa emotikon
+    await NotificationService().showNotification(
+      title: newValue ? 'Login Biometrik Aktif' : 'Login Biometrik Nonaktif',
+      body: newValue
+          ? 'Keamanan akun Anda kini ditingkatkan menggunakan verifikasi sidik jari.'
+          : 'Masuk ke aplikasi kini memerlukan autentikasi standar.',
+    );
+
     if (mounted) {
       setState(() {
         _on = newValue;
