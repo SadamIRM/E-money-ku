@@ -164,6 +164,8 @@ flutter run
 cd project
 flutter run
 
+```
+
 ## UI aplikasi Smoke Money & Store Smoke
 
 * Tampilan UI
