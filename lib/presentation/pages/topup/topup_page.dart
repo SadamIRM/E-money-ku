@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/services/notification_service.dart';
 import '../../blocs/payment/payment_bloc.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_top_bar.dart';
@@ -30,6 +31,12 @@ class _TopUpPageState extends State<TopUpPage> {
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
         if (state is PaymentTopupSuccess) {
+          // Kirim notifikasi lokal top up berhasil
+          NotificationService().showNotification(
+            title: 'Top Up Berhasil',
+            body: 'Saldo Anda telah bertambah sebesar ${CurrencyFormatter.format(state.amount)} melalui ${_methodName()}.',
+          );
+
           context.go('/success', extra: {
             'title': 'Top up berhasil',
             'subtitle': 'Saldo kamu bertambah',
