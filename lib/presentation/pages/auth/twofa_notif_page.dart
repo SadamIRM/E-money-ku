@@ -50,7 +50,7 @@ class _TwoFANotifPageState extends State<TwoFANotifPage> {
                 ),
               ),
               Expanded(
-                child: Padding(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(28, 8, 28, 28),
                   child: Column(
                     children: [
@@ -108,11 +108,11 @@ class _TwoFANotifPageState extends State<TwoFANotifPage> {
                                   fontSize: 13.5,
                                   color: AppColors.slate400,
                                   fontWeight: FontWeight.w600,
-                                )),
+                                ),),
                           ],
                         ),
                       ],
-                      const Spacer(),
+                      const SizedBox(height: 40),
                       const Text(
                         'Tidak menerima notifikasi? Kirim ulang',
                         style: TextStyle(fontSize: 12.5, color: AppColors.slate400),
