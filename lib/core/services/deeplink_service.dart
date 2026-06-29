@@ -157,9 +157,9 @@ class DeeplinkService {
   }
 
   bool _isPaymentLink(Uri uri) {
-    if (uri.scheme == 'dompetkampus' && uri.host == 'pay') return true;
+    if (uri.scheme == 'smokemoney' && uri.host == 'pay') return true;
     if (uri.scheme == 'https' &&
-        uri.host == 'dompetkampus.app' &&
+        uri.host == 'smokemoney.app' &&
         uri.path.startsWith('/pay')) {
       return true;
     }
